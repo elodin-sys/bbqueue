@@ -149,7 +149,16 @@ impl<S: Storage, C: Coord, N: Notifier> crate::queue::ArcBBQueue<S, C, N> {
     /// frame length header type.
     ///
     /// This can be used to support large frame sizes by selecting a larger
-    /// [`LenHeader`] type such as `usize`.
+    /// [`LenHeader`](crate::prod_cons::framed::LenHeader) type such as
+    /// `usize`.
+    ///
+    /// The `H` header type MUST match the `H` used to create the paired
+    /// [`FramedConsumer`] (typically via
+    /// [`framed_consumer_with_header`](Self::framed_consumer_with_header)).
+    /// Header width is not stored in the queue itself, so a mismatch will
+    /// silently corrupt framing rather than producing a compile-time or
+    /// runtime error. Mixing framed with stream producers/consumers will not
+    /// result in UB either, but will also not work correctly.
     pub fn framed_producer_with_header<H: crate::prod_cons::framed::LenHeader>(
         &self,
     ) -> FramedProducer<alloc::sync::Arc<BBQueue<S, C, N>>, H> {
@@ -163,7 +172,16 @@ impl<S: Storage, C: Coord, N: Notifier> crate::queue::ArcBBQueue<S, C, N> {
     /// frame length header type.
     ///
     /// This can be used to support large frame sizes by selecting a larger
-    /// [`LenHeader`] type such as `usize`.
+    /// [`LenHeader`](crate::prod_cons::framed::LenHeader) type such as
+    /// `usize`.
+    ///
+    /// The `H` header type MUST match the `H` used to create the paired
+    /// [`FramedProducer`] (typically via
+    /// [`framed_producer_with_header`](Self::framed_producer_with_header)).
+    /// Header width is not stored in the queue itself, so a mismatch will
+    /// silently corrupt framing rather than producing a compile-time or
+    /// runtime error. Mixing framed with stream producers/consumers will not
+    /// result in UB either, but will also not work correctly.
     pub fn framed_consumer_with_header<H: crate::prod_cons::framed::LenHeader>(
         &self,
     ) -> FramedConsumer<alloc::sync::Arc<BBQueue<S, C, N>>, H> {
